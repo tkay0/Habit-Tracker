@@ -22,7 +22,19 @@ export const colors = {
   gold: '#C99A3E',
   border: '#E4D9C7',
   miss: '#B15347',
+  slate: '#5B7C99',
+  plum: '#8B5A7C',
 } as const;
+
+// The 6 accent colors habits can be tagged with (excludes the neutral/background tokens above).
+export const habitColors = [
+  'terracotta',
+  'moss',
+  'gold',
+  'miss',
+  'slate',
+  'plum',
+] as const satisfies readonly (keyof typeof colors)[];
 
 export const spacing = {
   xs: 4,

@@ -5,20 +5,22 @@ import { colors, radius, spacing, type } from '../theme';
 interface ButtonProps {
   label: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'danger';
   disabled?: boolean;
 }
 
+const VARIANT_STYLES = {
+  primary: { container: 'primary', text: 'primaryText' },
+  secondary: { container: 'secondary', text: 'secondaryText' },
+  danger: { container: 'danger', text: 'dangerText' },
+} as const;
+
 export default function Button({ label, onPress, variant = 'primary', disabled = false }: ButtonProps) {
-  const isPrimary = variant === 'primary';
+  const { container, text } = VARIANT_STYLES[variant];
 
   return (
-    <Pressable
-      onPress={onPress}
-      disabled={disabled}
-      style={[styles.base, isPrimary ? styles.primary : styles.secondary, disabled && styles.disabled]}
-    >
-      <Text style={[type.button, isPrimary ? styles.primaryText : styles.secondaryText]}>{label}</Text>
+    <Pressable onPress={onPress} disabled={disabled} style={[styles.base, styles[container], disabled && styles.disabled]}>
+      <Text style={[type.button, styles[text]]}>{label}</Text>
     </Pressable>
   );
 }
@@ -38,6 +40,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
+  danger: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.miss,
+  },
   disabled: {
     opacity: 0.5,
   },
@@ -46,5 +53,8 @@ const styles = StyleSheet.create({
   },
   secondaryText: {
     color: colors.ink,
+  },
+  dangerText: {
+    color: colors.miss,
   },
 });

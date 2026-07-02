@@ -1,8 +1,7 @@
 import { addDays, format, getISODay, parseISO, subDays } from 'date-fns';
 
 import type { Completion, Habit } from '../db/types';
-
-const DATE_FORMAT = 'yyyy-MM-dd';
+import { DATE_FORMAT, isScheduledOn, todayDateString } from './schedule';
 
 // Guards getCurrentStreak against malformed data (e.g. a 'custom' habit with
 // an empty customDays array) where no day is ever "scheduled" and the walk
@@ -23,20 +22,10 @@ export interface BestWorstWeekday {
   worst: WeekdayStat | null;
 }
 
-function todayString(): string {
-  return format(new Date(), DATE_FORMAT);
-}
-
-function isScheduled(habit: StreakHabit, dateStr: string): boolean {
-  if (habit.frequencyType === 'daily') return true;
-  const isoWeekday = getISODay(parseISO(dateStr));
-  return (habit.customDays ?? []).includes(isoWeekday);
-}
-
 export function getCurrentStreak(
   habit: StreakHabit,
   completions: CompletionRecord[],
-  today: string = todayString()
+  today: string = todayDateString()
 ): number {
   const completedDates = new Set(completions.map((c) => c.date));
   let streak = 0;
@@ -45,7 +34,7 @@ export function getCurrentStreak(
 
   for (let daysChecked = 0; daysChecked < MAX_LOOKBACK_DAYS; daysChecked += 1) {
     const dateStr = format(cursor, DATE_FORMAT);
-    if (isScheduled(habit, dateStr)) {
+    if (isScheduledOn(habit, dateStr)) {
       if (completedDates.has(dateStr)) {
         streak += 1;
       } else if (isFirstDay) {
@@ -74,7 +63,7 @@ export function getLongestStreak(habit: StreakHabit, completions: CompletionReco
 
   while (cursor.getTime() <= end.getTime()) {
     const dateStr = format(cursor, DATE_FORMAT);
-    if (isScheduled(habit, dateStr)) {
+    if (isScheduledOn(habit, dateStr)) {
       if (completedDates.has(dateStr)) {
         current += 1;
         longest = Math.max(longest, current);
@@ -92,7 +81,7 @@ export function getCompletionRate(
   habit: StreakHabit,
   completions: CompletionRecord[],
   rangeDays: number,
-  today: string = todayString()
+  today: string = todayDateString()
 ): number {
   const completedDates = new Set(completions.map((c) => c.date));
   const end = parseISO(today);
@@ -102,7 +91,7 @@ export function getCompletionRate(
 
   for (let i = 0; i < rangeDays; i += 1) {
     const dateStr = format(subDays(end, i), DATE_FORMAT);
-    if (isScheduled(habit, dateStr)) {
+    if (isScheduledOn(habit, dateStr)) {
       scheduled += 1;
       if (completedDates.has(dateStr)) completed += 1;
     }
@@ -114,7 +103,7 @@ export function getCompletionRate(
 export function getBestWorstWeekday(
   habit: StreakHabit,
   completions: CompletionRecord[],
-  today: string = todayString()
+  today: string = todayDateString()
 ): BestWorstWeekday {
   if (completions.length === 0) return { best: null, worst: null };
 
@@ -128,7 +117,7 @@ export function getBestWorstWeekday(
 
   while (cursor.getTime() <= end.getTime()) {
     const dateStr = format(cursor, DATE_FORMAT);
-    if (isScheduled(habit, dateStr)) {
+    if (isScheduledOn(habit, dateStr)) {
       const weekday = getISODay(cursor);
       scheduledCount[weekday] += 1;
       if (completedDates.has(dateStr)) completedCount[weekday] += 1;

@@ -7,7 +7,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { getProfile, initDatabase } from './src/db';
 import { getBiometricLabel, hasPinSet, isBiometricAvailable } from './src/lib/auth';
 import LockScreen from './src/screens/LockScreen';
-import StyleGuideScreen from './src/screens/StyleGuideScreen';
+import TodayScreen from './src/screens/TodayScreen';
 import WelcomeScreen from './src/screens/WelcomeScreen';
 import { colors, fontsToLoad } from './src/theme';
 
@@ -65,7 +65,7 @@ export default function App() {
           onUnlock={() => setPhase('unlocked')}
         />
       )}
-      {phase === 'unlocked' && <StyleGuideScreen />}
+      {phase === 'unlocked' && <TodayScreen />}
       <StatusBar style="dark" />
     </SafeAreaProvider>
   );
