@@ -1,13 +1,7 @@
 import { useState } from 'react';
-import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
+import Button from '../components/Button';
 import { colors, radius, spacing, type } from '../theme';
 
 const SWATCHES: { name: string; hex: keyof typeof colors }[] = [
@@ -76,12 +70,10 @@ export default function StyleGuideScreen() {
       </Section>
 
       <Section title="BUTTONS">
-        <Pressable style={styles.primaryButton}>
-          <Text style={[type.button, styles.primaryButtonText]}>Primary action</Text>
-        </Pressable>
-        <Pressable style={styles.secondaryButton}>
-          <Text style={[type.button, styles.secondaryButtonText]}>Secondary action</Text>
-        </Pressable>
+        <View style={styles.buttonGap}>
+          <Button label="Primary action" onPress={() => {}} />
+        </View>
+        <Button label="Secondary action" variant="secondary" onPress={() => {}} />
       </Section>
 
       <Section title="CARD">
@@ -167,28 +159,8 @@ const styles = StyleSheet.create({
     color: colors.ink,
     textAlign: 'left',
   },
-  primaryButton: {
-    backgroundColor: colors.terracotta,
-    borderRadius: radius.md,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    alignItems: 'center',
+  buttonGap: {
     marginBottom: spacing.base,
-  },
-  primaryButtonText: {
-    color: colors.surface,
-  },
-  secondaryButton: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.md,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    alignItems: 'center',
-  },
-  secondaryButtonText: {
-    color: colors.ink,
   },
   card: {
     backgroundColor: colors.surface,
