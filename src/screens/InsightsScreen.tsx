@@ -15,7 +15,7 @@ import {
   getBestWorstWeekday,
   type BestWorstWeekday,
 } from '../lib/streaks';
-import { colors, radius, spacing, type } from '../theme';
+import { radius, spacing, type ColorPalette, type, useTheme } from '../theme';
 
 type Period = '7d' | '30d' | 'all';
 
@@ -41,6 +41,8 @@ interface InsightsScreenProps {
 }
 
 export default function InsightsScreen({ visible, onClose }: InsightsScreenProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [habits, setHabits] = useState<Habit[]>([]);
   const [completionsByHabit, setCompletionsByHabit] = useState<Record<string, Completion[]>>({});
   const [loading, setLoading] = useState(true);
@@ -265,169 +267,171 @@ export default function InsightsScreen({ visible, onClose }: InsightsScreenProps
   );
 }
 
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.bg,
-  },
-  content: {
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.xl * 2,
-  },
-  title: {
-    color: colors.ink,
-    textAlign: 'left',
-    marginBottom: spacing.xl,
-  },
-  sectionLabel: {
-    color: colors.inkMuted,
-    marginBottom: spacing.sm,
-    textAlign: 'left',
-  },
-  empty: {
-    paddingTop: spacing.xl * 2,
-    alignItems: 'flex-start',
-  },
-  emptyTitle: {
-    color: colors.ink,
-    textAlign: 'left',
-    marginBottom: spacing.sm,
-  },
-  emptySubtitle: {
-    color: colors.inkMuted,
-    textAlign: 'left',
-  },
-  pillRow: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-    marginBottom: spacing.base,
-  },
-  pillScroll: {
-    marginBottom: spacing.base,
-  },
-  pill: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.md,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.base,
-    backgroundColor: colors.surface,
-  },
-  pillSelected: {
-    backgroundColor: colors.ink,
-    borderColor: colors.ink,
-  },
-  pillText: {
-    color: colors.ink,
-  },
-  pillTextSelected: {
-    color: colors.surface,
-  },
-  overallCard: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.md,
-    paddingVertical: spacing.lg,
-    paddingHorizontal: spacing.base,
-    alignItems: 'flex-start',
-    marginBottom: spacing.xl,
-  },
-  overallLabel: {
-    color: colors.inkMuted,
-    marginTop: spacing.xs,
-  },
-  card: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.md,
-    paddingHorizontal: spacing.base,
-    marginBottom: spacing.xl,
-  },
-  habitRateRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: spacing.md,
-  },
-  habitRateRowBorder: {
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-  },
-  habitIconWrap: {
-    width: 32,
-    height: 32,
-    borderRadius: radius.sm,
-    borderWidth: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: spacing.base,
-  },
-  habitRateInfo: {
-    flex: 1,
-    marginRight: spacing.base,
-  },
-  habitRateName: {
-    color: colors.ink,
-    textAlign: 'left',
-    marginBottom: spacing.xs,
-  },
-  barTrack: {
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.border,
-    overflow: 'hidden',
-  },
-  barFill: {
-    height: 6,
-    borderRadius: 3,
-  },
-  habitRatePercent: {
-    fontWeight: '700',
-  },
-  statsRow: {
-    flexDirection: 'row',
-    gap: spacing.base,
-    marginBottom: spacing.xl,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.md,
-    paddingVertical: spacing.lg,
-    paddingHorizontal: spacing.base,
-    alignItems: 'flex-start',
-  },
-  statLabel: {
-    color: colors.inkMuted,
-    marginTop: spacing.xs,
-  },
-  statSubtext: {
-    color: colors.inkMuted,
-    marginTop: spacing.xs,
-  },
-  streakRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: spacing.md,
-  },
-  streakRank: {
-    color: colors.inkMuted,
-    width: 20,
-  },
-  streakName: {
-    flex: 1,
-    color: colors.ink,
-    textAlign: 'left',
-  },
-  noStreaksText: {
-    color: colors.inkMuted,
-    paddingVertical: spacing.base,
-  },
-  actions: {
-    marginTop: spacing.base,
-  },
-});
+function createStyles(colors: ColorPalette) {
+  return StyleSheet.create({
+    screen: {
+      flex: 1,
+      backgroundColor: colors.bg,
+    },
+    content: {
+      paddingHorizontal: spacing.xl,
+      paddingTop: spacing.xl,
+      paddingBottom: spacing.xl * 2,
+    },
+    title: {
+      color: colors.ink,
+      textAlign: 'left',
+      marginBottom: spacing.xl,
+    },
+    sectionLabel: {
+      color: colors.inkMuted,
+      marginBottom: spacing.sm,
+      textAlign: 'left',
+    },
+    empty: {
+      paddingTop: spacing.xl * 2,
+      alignItems: 'flex-start',
+    },
+    emptyTitle: {
+      color: colors.ink,
+      textAlign: 'left',
+      marginBottom: spacing.sm,
+    },
+    emptySubtitle: {
+      color: colors.inkMuted,
+      textAlign: 'left',
+    },
+    pillRow: {
+      flexDirection: 'row',
+      gap: spacing.sm,
+      marginBottom: spacing.base,
+    },
+    pillScroll: {
+      marginBottom: spacing.base,
+    },
+    pill: {
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: radius.md,
+      paddingVertical: spacing.sm,
+      paddingHorizontal: spacing.base,
+      backgroundColor: colors.surface,
+    },
+    pillSelected: {
+      backgroundColor: colors.ink,
+      borderColor: colors.ink,
+    },
+    pillText: {
+      color: colors.ink,
+    },
+    pillTextSelected: {
+      color: colors.surface,
+    },
+    overallCard: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: radius.md,
+      paddingVertical: spacing.lg,
+      paddingHorizontal: spacing.base,
+      alignItems: 'flex-start',
+      marginBottom: spacing.xl,
+    },
+    overallLabel: {
+      color: colors.inkMuted,
+      marginTop: spacing.xs,
+    },
+    card: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: radius.md,
+      paddingHorizontal: spacing.base,
+      marginBottom: spacing.xl,
+    },
+    habitRateRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: spacing.md,
+    },
+    habitRateRowBorder: {
+      borderTopWidth: 1,
+      borderTopColor: colors.border,
+    },
+    habitIconWrap: {
+      width: 32,
+      height: 32,
+      borderRadius: radius.sm,
+      borderWidth: 2,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: spacing.base,
+    },
+    habitRateInfo: {
+      flex: 1,
+      marginRight: spacing.base,
+    },
+    habitRateName: {
+      color: colors.ink,
+      textAlign: 'left',
+      marginBottom: spacing.xs,
+    },
+    barTrack: {
+      height: 6,
+      borderRadius: 3,
+      backgroundColor: colors.border,
+      overflow: 'hidden',
+    },
+    barFill: {
+      height: 6,
+      borderRadius: 3,
+    },
+    habitRatePercent: {
+      fontWeight: '700',
+    },
+    statsRow: {
+      flexDirection: 'row',
+      gap: spacing.base,
+      marginBottom: spacing.xl,
+    },
+    statCard: {
+      flex: 1,
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: radius.md,
+      paddingVertical: spacing.lg,
+      paddingHorizontal: spacing.base,
+      alignItems: 'flex-start',
+    },
+    statLabel: {
+      color: colors.inkMuted,
+      marginTop: spacing.xs,
+    },
+    statSubtext: {
+      color: colors.inkMuted,
+      marginTop: spacing.xs,
+    },
+    streakRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: spacing.md,
+    },
+    streakRank: {
+      color: colors.inkMuted,
+      width: 20,
+    },
+    streakName: {
+      flex: 1,
+      color: colors.ink,
+      textAlign: 'left',
+    },
+    noStreaksText: {
+      color: colors.inkMuted,
+      paddingVertical: spacing.base,
+    },
+    actions: {
+      marginTop: spacing.base,
+    },
+  });
+}

@@ -6,14 +6,21 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AddEditHabitScreen from './AddEditHabitScreen';
 import HabitDetailScreen from './HabitDetailScreen';
 import InsightsScreen from './InsightsScreen';
+import SettingsScreen from './SettingsScreen';
 import HabitRow from '../components/HabitRow';
 import { addCompletion, listCompletionsForHabit, listHabits, removeCompletion } from '../db';
 import type { Completion, Habit } from '../db/types';
 import { isScheduledOn, todayDateString } from '../lib/schedule';
 import { getCurrentStreak } from '../lib/streaks';
-import { colors, radius, spacing, type } from '../theme';
+import { radius, spacing, type ColorPalette, type, useTheme } from '../theme';
 
-export default function TodayScreen() {
+interface TodayScreenProps {
+  onDataReset: () => void;
+}
+
+export default function TodayScreen({ onDataReset }: TodayScreenProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [habits, setHabits] = useState<Habit[]>([]);
   const [completionsByHabit, setCompletionsByHabit] = useState<Record<string, Completion[]>>({});
   const [loading, setLoading] = useState(true);
@@ -22,6 +29,7 @@ export default function TodayScreen() {
   const [detailVisible, setDetailVisible] = useState(false);
   const [detailHabit, setDetailHabit] = useState<Habit | null>(null);
   const [insightsVisible, setInsightsVisible] = useState(false);
+  const [settingsVisible, setSettingsVisible] = useState(false);
 
   const today = useMemo(() => todayDateString(), []);
 
@@ -124,9 +132,14 @@ export default function TodayScreen() {
         ListHeaderComponent={
           <View style={styles.headerRow}>
             <Text style={[type.display, styles.pageTitle]}>Today</Text>
-            <Pressable style={styles.insightsButton} onPress={() => setInsightsVisible(true)} hitSlop={8}>
-              <Feather name="bar-chart-2" size={22} color={colors.ink} />
-            </Pressable>
+            <View style={styles.headerButtons}>
+              <Pressable style={styles.insightsButton} onPress={() => setInsightsVisible(true)} hitSlop={8}>
+                <Feather name="bar-chart-2" size={22} color={colors.ink} />
+              </Pressable>
+              <Pressable style={styles.insightsButton} onPress={() => setSettingsVisible(true)} hitSlop={8}>
+                <Feather name="settings" size={22} color={colors.ink} />
+              </Pressable>
+            </View>
           </View>
         }
         renderItem={({ item }) => (
@@ -170,70 +183,85 @@ export default function TodayScreen() {
       <HabitDetailScreen visible={detailVisible} habit={detailHabit} onClose={handleDetailClose} />
 
       <InsightsScreen visible={insightsVisible} onClose={() => setInsightsVisible(false)} />
+
+      <SettingsScreen
+        visible={settingsVisible}
+        onClose={() => setSettingsVisible(false)}
+        onDataReset={() => {
+          setSettingsVisible(false);
+          onDataReset();
+        }}
+      />
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.bg,
-  },
-  listContent: {
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.xl * 3,
-    flexGrow: 1,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: spacing.xl,
-  },
-  pageTitle: {
-    color: colors.ink,
-    textAlign: 'left',
-  },
-  insightsButton: {
-    width: 44,
-    height: 44,
-    borderRadius: radius.sm,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  empty: {
-    flex: 1,
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-    paddingTop: spacing.xl * 2,
-  },
-  emptyTitle: {
-    color: colors.ink,
-    textAlign: 'left',
-    marginBottom: spacing.sm,
-  },
-  emptySubtitle: {
-    color: colors.inkMuted,
-    textAlign: 'left',
-  },
-  fab: {
-    position: 'absolute',
-    right: spacing.xl,
-    bottom: spacing.xl,
-    width: 60,
-    height: 60,
-    borderRadius: radius.md,
-    backgroundColor: colors.terracotta,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  fabText: {
-    color: colors.surface,
-    fontSize: 30,
-    lineHeight: 32,
-  },
-});
+function createStyles(colors: ColorPalette) {
+  return StyleSheet.create({
+    screen: {
+      flex: 1,
+      backgroundColor: colors.bg,
+    },
+    listContent: {
+      paddingHorizontal: spacing.xl,
+      paddingTop: spacing.xl,
+      paddingBottom: spacing.xl * 3,
+      flexGrow: 1,
+    },
+    headerRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: spacing.xl,
+    },
+    headerButtons: {
+      flexDirection: 'row',
+      gap: spacing.sm,
+    },
+    pageTitle: {
+      color: colors.ink,
+      textAlign: 'left',
+    },
+    insightsButton: {
+      width: 44,
+      height: 44,
+      borderRadius: radius.sm,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.surface,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    empty: {
+      flex: 1,
+      alignItems: 'flex-start',
+      justifyContent: 'center',
+      paddingTop: spacing.xl * 2,
+    },
+    emptyTitle: {
+      color: colors.ink,
+      textAlign: 'left',
+      marginBottom: spacing.sm,
+    },
+    emptySubtitle: {
+      color: colors.inkMuted,
+      textAlign: 'left',
+    },
+    fab: {
+      position: 'absolute',
+      right: spacing.xl,
+      bottom: spacing.xl,
+      width: 60,
+      height: 60,
+      borderRadius: radius.md,
+      backgroundColor: colors.terracotta,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    fabText: {
+      color: colors.surface,
+      fontSize: 30,
+      lineHeight: 32,
+    },
+  });
+}

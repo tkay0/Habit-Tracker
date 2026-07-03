@@ -1,8 +1,9 @@
+import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Rect } from 'react-native-svg';
 
 import type { HeatmapCell } from '../lib/heatmap';
-import { colors, type } from '../theme';
+import { type, type ColorPalette, useTheme } from '../theme';
 
 interface HabitHeatmapProps {
   cells: HeatmapCell[];
@@ -17,6 +18,8 @@ const WEEKDAY_LABELS: Record<number, string> = { 1: 'M', 3: 'W', 5: 'F' };
 const WEEKDAYS = [1, 2, 3, 4, 5, 6, 7];
 
 export default function HabitHeatmap({ cells, color, weeks = 12 }: HabitHeatmapProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const width = weeks * (CELL_SIZE + CELL_GAP) - CELL_GAP;
   const height = WEEKDAYS.length * (CELL_SIZE + CELL_GAP) - CELL_GAP;
 
@@ -58,24 +61,26 @@ export default function HabitHeatmap({ cells, color, weeks = 12 }: HabitHeatmapP
   );
 }
 
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  labelColumn: {
-    marginRight: CELL_GAP + 4,
-  },
-  labelCell: {
-    height: CELL_SIZE,
-    justifyContent: 'center',
-  },
-  labelCellGap: {
-    marginBottom: CELL_GAP,
-  },
-  labelText: {
-    color: colors.inkMuted,
-    fontSize: 10,
-    lineHeight: CELL_SIZE,
-  },
-});
+function createStyles(colors: ColorPalette) {
+  return StyleSheet.create({
+    row: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+    },
+    labelColumn: {
+      marginRight: CELL_GAP + 4,
+    },
+    labelCell: {
+      height: CELL_SIZE,
+      justifyContent: 'center',
+    },
+    labelCellGap: {
+      marginBottom: CELL_GAP,
+    },
+    labelText: {
+      color: colors.inkMuted,
+      fontSize: 10,
+      lineHeight: CELL_SIZE,
+    },
+  });
+}

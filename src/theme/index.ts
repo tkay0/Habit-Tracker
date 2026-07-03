@@ -12,21 +12,13 @@ import {
 } from '@expo-google-fonts/manrope';
 import type { TextStyle } from 'react-native';
 
-export const colors = {
-  bg: '#F5EFE4',
-  surface: '#FFFDF8',
-  ink: '#2A2420',
-  inkMuted: '#7C7267',
-  terracotta: '#C15F3C',
-  moss: '#6E7F5C',
-  gold: '#C99A3E',
-  border: '#E4D9C7',
-  miss: '#B15347',
-  slate: '#5B7C99',
-  plum: '#8B5A7C',
-} as const;
+import { lightColors } from './palettes';
 
-// The 6 accent colors habits can be tagged with (excludes the neutral/background tokens above).
+export { lightColors, darkColors, type ColorPalette } from './palettes';
+export { ThemeProvider, useTheme } from './ThemeContext';
+
+// The 6 accent colors habits can be tagged with (excludes the neutral/background tokens).
+// Same key set in both palettes, so either can be used to type this.
 export const habitColors = [
   'terracotta',
   'moss',
@@ -34,7 +26,7 @@ export const habitColors = [
   'miss',
   'slate',
   'plum',
-] as const satisfies readonly (keyof typeof colors)[];
+] as const satisfies readonly (keyof typeof lightColors)[];
 
 export const spacing = {
   xs: 4,
@@ -78,7 +70,3 @@ export const type: Record<
   button: { fontFamily: 'Manrope_700Bold', fontSize: 16, lineHeight: 20 },
   caption: { fontFamily: 'Manrope_400Regular', fontSize: 12, lineHeight: 16 },
 };
-
-export const theme = { colors, spacing, radius, type };
-
-export type Theme = typeof theme;

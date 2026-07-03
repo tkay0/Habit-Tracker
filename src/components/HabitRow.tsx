@@ -1,7 +1,8 @@
 import { Feather } from '@expo/vector-icons';
+import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { colors, radius, spacing, type } from '../theme';
+import { radius, spacing, type ColorPalette, type, useTheme } from '../theme';
 
 interface HabitRowProps {
   name: string;
@@ -15,6 +16,9 @@ interface HabitRowProps {
 }
 
 export default function HabitRow({ name, icon, color, streak, isCompleted, onToggle, onEdit, onPress }: HabitRowProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   return (
     <View style={styles.row}>
       <Pressable style={styles.tapArea} onPress={onPress}>
@@ -46,56 +50,58 @@ export default function HabitRow({ name, icon, color, streak, isCompleted, onTog
   );
 }
 
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.md,
-    padding: spacing.base,
-    marginBottom: spacing.base,
-  },
-  tapArea: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconWrap: {
-    width: 48,
-    height: 48,
-    borderRadius: radius.sm,
-    borderWidth: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: spacing.base,
-  },
-  info: {
-    flex: 1,
-  },
-  name: {
-    color: colors.ink,
-    textAlign: 'left',
-  },
-  streak: {
-    color: colors.gold,
-    textAlign: 'left',
-    marginTop: spacing.xs,
-  },
-  editButton: {
-    padding: spacing.xs,
-    marginLeft: spacing.sm,
-  },
-  check: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.bg,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: spacing.base,
-  },
-});
+function createStyles(colors: ColorPalette) {
+  return StyleSheet.create({
+    row: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: radius.md,
+      padding: spacing.base,
+      marginBottom: spacing.base,
+    },
+    tapArea: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    iconWrap: {
+      width: 48,
+      height: 48,
+      borderRadius: radius.sm,
+      borderWidth: 2,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: spacing.base,
+    },
+    info: {
+      flex: 1,
+    },
+    name: {
+      color: colors.ink,
+      textAlign: 'left',
+    },
+    streak: {
+      color: colors.gold,
+      textAlign: 'left',
+      marginTop: spacing.xs,
+    },
+    editButton: {
+      padding: spacing.xs,
+      marginLeft: spacing.sm,
+    },
+    check: {
+      width: 56,
+      height: 56,
+      borderRadius: 28,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.bg,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginLeft: spacing.base,
+    },
+  });
+}

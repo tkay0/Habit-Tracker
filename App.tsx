@@ -9,9 +9,33 @@ import { getBiometricLabel, hasPinSet, isBiometricAvailable } from './src/lib/au
 import LockScreen from './src/screens/LockScreen';
 import TodayScreen from './src/screens/TodayScreen';
 import WelcomeScreen from './src/screens/WelcomeScreen';
-import { colors, fontsToLoad } from './src/theme';
+import { fontsToLoad, lightColors, ThemeProvider, useTheme } from './src/theme';
 
 type AuthPhase = 'loading' | 'welcome' | 'locked' | 'unlocked';
+
+interface AppShellProps {
+  phase: AuthPhase;
+  biometricEnabled: boolean;
+  biometricLabel: string | null;
+  onWelcomeComplete: () => void;
+  onUnlock: () => void;
+  onDataReset: () => void;
+}
+
+function AppShell({ phase, biometricEnabled, biometricLabel, onWelcomeComplete, onUnlock, onDataReset }: AppShellProps) {
+  const { mode } = useTheme();
+
+  return (
+    <>
+      {phase === 'welcome' && <WelcomeScreen onComplete={onWelcomeComplete} />}
+      {phase === 'locked' && (
+        <LockScreen biometricEnabled={biometricEnabled} biometricLabel={biometricLabel} onUnlock={onUnlock} />
+      )}
+      {phase === 'unlocked' && <TodayScreen onDataReset={onDataReset} />}
+      <StatusBar style={mode === 'dark' ? 'light' : 'dark'} />
+    </>
+  );
+}
 
 export default function App() {
   const [fontsLoaded] = useFonts(fontsToLoad);
@@ -19,6 +43,7 @@ export default function App() {
   const [phase, setPhase] = useState<AuthPhase>('loading');
   const [biometricEnabled, setBiometricEnabled] = useState(false);
   const [biometricLabel, setBiometricLabel] = useState<string | null>(null);
+  const [themeResetKey, setThemeResetKey] = useState(0);
 
   const evaluatePhase = useCallback(async () => {
     const profile = await getProfile();
@@ -52,21 +77,24 @@ export default function App() {
   }, [dbReady, evaluatePhase]);
 
   if (!fontsLoaded || phase === 'loading') {
-    return <View style={{ flex: 1, backgroundColor: colors.bg }} />;
+    return <View style={{ flex: 1, backgroundColor: lightColors.bg }} />;
   }
 
   return (
     <SafeAreaProvider>
-      {phase === 'welcome' && <WelcomeScreen onComplete={evaluatePhase} />}
-      {phase === 'locked' && (
-        <LockScreen
+      <ThemeProvider key={themeResetKey}>
+        <AppShell
+          phase={phase}
           biometricEnabled={biometricEnabled}
           biometricLabel={biometricLabel}
+          onWelcomeComplete={evaluatePhase}
           onUnlock={() => setPhase('unlocked')}
+          onDataReset={() => {
+            setThemeResetKey((key) => key + 1);
+            void evaluatePhase();
+          }}
         />
-      )}
-      {phase === 'unlocked' && <TodayScreen />}
-      <StatusBar style="dark" />
+      </ThemeProvider>
     </SafeAreaProvider>
   );
 }

@@ -1,14 +1,14 @@
 import { Feather } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { format, parse } from 'date-fns';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Alert, Modal, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Button from '../components/Button';
 import { createHabit, deleteHabit, updateHabit } from '../db/habits';
 import type { FrequencyType, Habit } from '../db/types';
-import { colors, habitColors, radius, spacing, type } from '../theme';
+import { habitColors, radius, spacing, type ColorPalette, type, useTheme } from '../theme';
 
 const ICON_OPTIONS: (keyof typeof Feather.glyphMap)[] = [
   'zap',
@@ -56,6 +56,8 @@ interface AddEditHabitScreenProps {
 }
 
 export default function AddEditHabitScreen({ visible, habit, onClose, onSaved, onDeleted }: AddEditHabitScreenProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const isEditing = habit !== null;
 
   const [name, setName] = useState('');
@@ -272,133 +274,135 @@ export default function AddEditHabitScreen({ visible, habit, onClose, onSaved, o
   );
 }
 
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.bg,
-  },
-  content: {
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.xl * 2,
-  },
-  title: {
-    color: colors.ink,
-    textAlign: 'left',
-    marginBottom: spacing.xl,
-  },
-  sectionLabel: {
-    color: colors.inkMuted,
-    marginBottom: spacing.sm,
-    textAlign: 'left',
-  },
-  textInput: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.sm,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.base,
-    color: colors.ink,
-    marginBottom: spacing.xl,
-  },
-  optionRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-    marginBottom: spacing.xl,
-  },
-  iconOption: {
-    width: 48,
-    height: 48,
-    borderRadius: radius.sm,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  colorOption: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    borderWidth: 2,
-    borderColor: colors.surface,
-  },
-  colorOptionSelected: {
-    borderColor: colors.ink,
-  },
-  frequencyRow: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-    marginBottom: spacing.base,
-  },
-  frequencyOption: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.md,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-  },
-  frequencyOptionSelected: {
-    backgroundColor: colors.ink,
-    borderColor: colors.ink,
-  },
-  frequencyText: {
-    color: colors.ink,
-  },
-  frequencyTextSelected: {
-    color: colors.surface,
-  },
-  dayRow: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-    marginBottom: spacing.xl,
-  },
-  dayOption: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  dayText: {
-    color: colors.ink,
-  },
-  dayTextSelected: {
-    color: colors.surface,
-  },
-  reminderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: spacing.base,
-  },
-  reminderLabel: {
-    color: colors.inkMuted,
-  },
-  timeButton: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.sm,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.base,
-    alignItems: 'flex-start',
-    marginBottom: spacing.xl,
-  },
-  timeButtonText: {
-    color: colors.ink,
-  },
-  actions: {
-    marginTop: spacing.base,
-  },
-  actionGap: {
-    height: spacing.base,
-  },
-});
+function createStyles(colors: ColorPalette) {
+  return StyleSheet.create({
+    screen: {
+      flex: 1,
+      backgroundColor: colors.bg,
+    },
+    content: {
+      paddingHorizontal: spacing.xl,
+      paddingTop: spacing.xl,
+      paddingBottom: spacing.xl * 2,
+    },
+    title: {
+      color: colors.ink,
+      textAlign: 'left',
+      marginBottom: spacing.xl,
+    },
+    sectionLabel: {
+      color: colors.inkMuted,
+      marginBottom: spacing.sm,
+      textAlign: 'left',
+    },
+    textInput: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: radius.sm,
+      paddingVertical: spacing.md,
+      paddingHorizontal: spacing.base,
+      color: colors.ink,
+      marginBottom: spacing.xl,
+    },
+    optionRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: spacing.sm,
+      marginBottom: spacing.xl,
+    },
+    iconOption: {
+      width: 48,
+      height: 48,
+      borderRadius: radius.sm,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.surface,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    colorOption: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      borderWidth: 2,
+      borderColor: colors.surface,
+    },
+    colorOptionSelected: {
+      borderColor: colors.ink,
+    },
+    frequencyRow: {
+      flexDirection: 'row',
+      gap: spacing.sm,
+      marginBottom: spacing.base,
+    },
+    frequencyOption: {
+      flex: 1,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: radius.md,
+      paddingVertical: spacing.md,
+      alignItems: 'center',
+      backgroundColor: colors.surface,
+    },
+    frequencyOptionSelected: {
+      backgroundColor: colors.ink,
+      borderColor: colors.ink,
+    },
+    frequencyText: {
+      color: colors.ink,
+    },
+    frequencyTextSelected: {
+      color: colors.surface,
+    },
+    dayRow: {
+      flexDirection: 'row',
+      gap: spacing.sm,
+      marginBottom: spacing.xl,
+    },
+    dayOption: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.surface,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    dayText: {
+      color: colors.ink,
+    },
+    dayTextSelected: {
+      color: colors.surface,
+    },
+    reminderRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: spacing.base,
+    },
+    reminderLabel: {
+      color: colors.inkMuted,
+    },
+    timeButton: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: radius.sm,
+      paddingVertical: spacing.md,
+      paddingHorizontal: spacing.base,
+      alignItems: 'flex-start',
+      marginBottom: spacing.xl,
+    },
+    timeButtonText: {
+      color: colors.ink,
+    },
+    actions: {
+      marginTop: spacing.base,
+    },
+    actionGap: {
+      height: spacing.base,
+    },
+  });
+}

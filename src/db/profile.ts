@@ -1,16 +1,19 @@
 import { getDb } from './client';
 import { generateId } from './id';
+import type { ThemeMode } from './types';
 
 export interface Profile {
   id: string;
   name: string;
   biometricEnabled: boolean;
+  themeMode: ThemeMode;
   createdAt: string;
 }
 
 export interface NewProfileInput {
   name: string;
   biometricEnabled?: boolean;
+  themeMode?: ThemeMode;
 }
 
 interface ProfileRow {
@@ -18,6 +21,7 @@ interface ProfileRow {
   name: string;
   pin_hash: string | null;
   biometric_enabled: number;
+  theme_mode: string;
   created_at: string;
 }
 
@@ -28,6 +32,7 @@ function mapProfileRow(row: ProfileRow): Profile {
     id: row.id,
     name: row.name,
     biometricEnabled: row.biometric_enabled === 1,
+    themeMode: row.theme_mode === 'dark' ? 'dark' : 'light',
     createdAt: row.created_at,
   };
 }
@@ -38,10 +43,11 @@ export async function createProfile(input: NewProfileInput): Promise<Profile> {
   const createdAt = new Date().toISOString();
 
   await db.runAsync(
-    `INSERT INTO profile (id, name, biometric_enabled, created_at) VALUES (?, ?, ?, ?)`,
+    `INSERT INTO profile (id, name, biometric_enabled, theme_mode, created_at) VALUES (?, ?, ?, ?, ?)`,
     id,
     input.name,
     input.biometricEnabled ? 1 : 0,
+    input.themeMode ?? 'light',
     createdAt
   );
 
@@ -59,4 +65,14 @@ export async function getProfile(): Promise<Profile | null> {
 export async function setBiometricEnabled(id: string, enabled: boolean): Promise<void> {
   const db = await getDb();
   await db.runAsync('UPDATE profile SET biometric_enabled = ? WHERE id = ?', enabled ? 1 : 0, id);
+}
+
+export async function setProfileName(id: string, name: string): Promise<void> {
+  const db = await getDb();
+  await db.runAsync('UPDATE profile SET name = ? WHERE id = ?', name, id);
+}
+
+export async function setThemeMode(id: string, mode: ThemeMode): Promise<void> {
+  const db = await getDb();
+  await db.runAsync('UPDATE profile SET theme_mode = ? WHERE id = ?', mode, id);
 }

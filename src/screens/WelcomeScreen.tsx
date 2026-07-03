@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -7,7 +7,7 @@ import PinDots from '../components/PinDots';
 import PinKeypad from '../components/PinKeypad';
 import { createProfile } from '../db/profile';
 import { getBiometricLabel, isBiometricAvailable, savePin } from '../lib/auth';
-import { colors, radius, spacing, type } from '../theme';
+import { radius, spacing, type ColorPalette, type, useTheme } from '../theme';
 
 type Step = 'name' | 'pin' | 'confirm' | 'biometric';
 
@@ -16,6 +16,8 @@ interface WelcomeScreenProps {
 }
 
 export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [step, setStep] = useState<Step>('name');
   const [name, setName] = useState('');
   const [pin, setPin] = useState('');
@@ -165,46 +167,48 @@ export default function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.bg,
-  },
-  flex: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: spacing.xl,
-  },
-  title: {
-    color: colors.ink,
-    textAlign: 'left',
-    marginBottom: spacing.sm,
-  },
-  subtitle: {
-    color: colors.inkMuted,
-    textAlign: 'left',
-    marginBottom: spacing.xl,
-  },
-  textInput: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.sm,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.base,
-    color: colors.ink,
-    marginBottom: spacing.xl,
-  },
-  dotsWrap: {
-    marginBottom: spacing.xl,
-  },
-  actions: {
-    marginTop: spacing.xl,
-  },
-  actionGap: {
-    height: spacing.base,
-  },
-});
+function createStyles(colors: ColorPalette) {
+  return StyleSheet.create({
+    screen: {
+      flex: 1,
+      backgroundColor: colors.bg,
+    },
+    flex: {
+      flex: 1,
+    },
+    content: {
+      flex: 1,
+      justifyContent: 'center',
+      paddingHorizontal: spacing.xl,
+    },
+    title: {
+      color: colors.ink,
+      textAlign: 'left',
+      marginBottom: spacing.sm,
+    },
+    subtitle: {
+      color: colors.inkMuted,
+      textAlign: 'left',
+      marginBottom: spacing.xl,
+    },
+    textInput: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: radius.sm,
+      paddingVertical: spacing.md,
+      paddingHorizontal: spacing.base,
+      color: colors.ink,
+      marginBottom: spacing.xl,
+    },
+    dotsWrap: {
+      marginBottom: spacing.xl,
+    },
+    actions: {
+      marginTop: spacing.xl,
+    },
+    actionGap: {
+      height: spacing.base,
+    },
+  });
+}

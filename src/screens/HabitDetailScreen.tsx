@@ -9,7 +9,7 @@ import { listCompletionsForHabit, updateHabit } from '../db';
 import type { Completion, Habit } from '../db/types';
 import { buildHeatmapCells } from '../lib/heatmap';
 import { getCurrentStreak, getLongestStreak } from '../lib/streaks';
-import { colors, radius, spacing, type } from '../theme';
+import { radius, spacing, type ColorPalette, type, useTheme } from '../theme';
 
 interface HabitDetailScreenProps {
   visible: boolean;
@@ -18,6 +18,8 @@ interface HabitDetailScreenProps {
 }
 
 export default function HabitDetailScreen({ visible, habit, onClose }: HabitDetailScreenProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [completions, setCompletions] = useState<Completion[]>([]);
   const [notes, setNotes] = useState('');
 
@@ -93,81 +95,83 @@ export default function HabitDetailScreen({ visible, habit, onClose }: HabitDeta
   );
 }
 
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.bg,
-  },
-  content: {
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.xl * 2,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing.xl,
-  },
-  iconWrap: {
-    width: 52,
-    height: 52,
-    borderRadius: radius.sm,
-    borderWidth: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: spacing.base,
-  },
-  title: {
-    color: colors.ink,
-    textAlign: 'left',
-    flexShrink: 1,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    gap: spacing.base,
-    marginBottom: spacing.xl,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.md,
-    paddingVertical: spacing.lg,
-    paddingHorizontal: spacing.base,
-    alignItems: 'flex-start',
-  },
-  statLabel: {
-    color: colors.inkMuted,
-    marginTop: spacing.xs,
-    textAlign: 'left',
-  },
-  sectionLabel: {
-    color: colors.inkMuted,
-    marginBottom: spacing.sm,
-    textAlign: 'left',
-  },
-  heatmapCard: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.md,
-    padding: spacing.base,
-    marginBottom: spacing.xl,
-    alignItems: 'flex-start',
-  },
-  notesInput: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.sm,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.base,
-    color: colors.ink,
-    minHeight: 100,
-    marginBottom: spacing.xl,
-  },
-  actions: {
-    marginTop: spacing.base,
-  },
-});
+function createStyles(colors: ColorPalette) {
+  return StyleSheet.create({
+    screen: {
+      flex: 1,
+      backgroundColor: colors.bg,
+    },
+    content: {
+      paddingHorizontal: spacing.xl,
+      paddingTop: spacing.xl,
+      paddingBottom: spacing.xl * 2,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: spacing.xl,
+    },
+    iconWrap: {
+      width: 52,
+      height: 52,
+      borderRadius: radius.sm,
+      borderWidth: 2,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: spacing.base,
+    },
+    title: {
+      color: colors.ink,
+      textAlign: 'left',
+      flexShrink: 1,
+    },
+    statsRow: {
+      flexDirection: 'row',
+      gap: spacing.base,
+      marginBottom: spacing.xl,
+    },
+    statCard: {
+      flex: 1,
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: radius.md,
+      paddingVertical: spacing.lg,
+      paddingHorizontal: spacing.base,
+      alignItems: 'flex-start',
+    },
+    statLabel: {
+      color: colors.inkMuted,
+      marginTop: spacing.xs,
+      textAlign: 'left',
+    },
+    sectionLabel: {
+      color: colors.inkMuted,
+      marginBottom: spacing.sm,
+      textAlign: 'left',
+    },
+    heatmapCard: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: radius.md,
+      padding: spacing.base,
+      marginBottom: spacing.xl,
+      alignItems: 'flex-start',
+    },
+    notesInput: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: radius.sm,
+      paddingVertical: spacing.md,
+      paddingHorizontal: spacing.base,
+      color: colors.ink,
+      minHeight: 100,
+      marginBottom: spacing.xl,
+    },
+    actions: {
+      marginTop: spacing.base,
+    },
+  });
+}

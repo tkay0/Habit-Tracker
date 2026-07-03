@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS profile (
   name TEXT NOT NULL,
   pin_hash TEXT,
   biometric_enabled INTEGER DEFAULT 0,
+  theme_mode TEXT NOT NULL DEFAULT 'light',
   created_at TEXT NOT NULL
 );
 

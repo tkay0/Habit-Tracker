@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import Button from '../components/Button';
-import { colors, radius, spacing, type } from '../theme';
+import { radius, spacing, type ColorPalette, type, useTheme } from '../theme';
 
-const SWATCHES: { name: string; hex: keyof typeof colors }[] = [
+const SWATCHES: { name: string; hex: keyof ColorPalette }[] = [
   { name: 'bg', hex: 'bg' },
   { name: 'surface', hex: 'surface' },
   { name: 'ink', hex: 'ink' },
@@ -26,7 +26,15 @@ const TYPE_SAMPLES: { label: string; token: keyof typeof type; sample: string }[
   { label: 'caption', token: 'caption', sample: 'Caption text for secondary detail.' },
 ];
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  styles,
+  children,
+}: {
+  title: string;
+  styles: ReturnType<typeof createStyles>;
+  children: React.ReactNode;
+}) {
   return (
     <View style={styles.section}>
       <Text style={[type.label, styles.sectionTitle]}>{title}</Text>
@@ -36,6 +44,8 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 export default function StyleGuideScreen() {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [inputValue, setInputValue] = useState('');
 
   return (
@@ -46,7 +56,7 @@ export default function StyleGuideScreen() {
     >
       <Text style={[type.display, styles.pageTitle]}>Style Guide</Text>
 
-      <Section title="COLORS">
+      <Section title="COLORS" styles={styles}>
         <View style={styles.swatchRow}>
           {SWATCHES.map((swatch) => (
             <View key={swatch.name} style={styles.swatchItem}>
@@ -58,7 +68,7 @@ export default function StyleGuideScreen() {
         </View>
       </Section>
 
-      <Section title="TYPE SCALE">
+      <Section title="TYPE SCALE" styles={styles}>
         <View style={styles.typeList}>
           {TYPE_SAMPLES.map((item) => (
             <View key={item.label} style={styles.typeRow}>
@@ -69,14 +79,14 @@ export default function StyleGuideScreen() {
         </View>
       </Section>
 
-      <Section title="BUTTONS">
+      <Section title="BUTTONS" styles={styles}>
         <View style={styles.buttonGap}>
           <Button label="Primary action" onPress={() => {}} />
         </View>
         <Button label="Secondary action" variant="secondary" onPress={() => {}} />
       </Section>
 
-      <Section title="CARD">
+      <Section title="CARD" styles={styles}>
         <View style={styles.card}>
           <Text style={[type.h3, styles.cardTitle]}>Morning routine</Text>
           <Text style={[type.bodyMuted, styles.cardBody]}>
@@ -85,7 +95,7 @@ export default function StyleGuideScreen() {
         </View>
       </Section>
 
-      <Section title="TEXT INPUT">
+      <Section title="TEXT INPUT" styles={styles}>
         <TextInput
           style={[type.body, styles.textInput]}
           value={inputValue}
@@ -98,93 +108,95 @@ export default function StyleGuideScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.bg,
-  },
-  content: {
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.xl * 2,
-  },
-  pageTitle: {
-    color: colors.ink,
-    marginBottom: spacing.xl,
-    textAlign: 'left',
-  },
-  section: {
-    marginBottom: spacing.xl,
-  },
-  sectionTitle: {
-    color: colors.inkMuted,
-    marginBottom: spacing.base,
-    textAlign: 'left',
-  },
-  swatchRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.base,
-  },
-  swatchItem: {
-    width: 84,
-  },
-  swatch: {
-    width: 84,
-    height: 84,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    marginBottom: spacing.sm,
-  },
-  swatchLabel: {
-    color: colors.ink,
-    textAlign: 'left',
-  },
-  swatchHex: {
-    color: colors.inkMuted,
-    textAlign: 'left',
-  },
-  typeList: {
-    gap: spacing.base,
-  },
-  typeRow: {
-    gap: spacing.xs,
-  },
-  typeLabel: {
-    color: colors.inkMuted,
-    textAlign: 'left',
-  },
-  typeSample: {
-    color: colors.ink,
-    textAlign: 'left',
-  },
-  buttonGap: {
-    marginBottom: spacing.base,
-  },
-  card: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.md,
-    padding: spacing.lg,
-  },
-  cardTitle: {
-    color: colors.ink,
-    marginBottom: spacing.xs,
-    textAlign: 'left',
-  },
-  cardBody: {
-    color: colors.inkMuted,
-    textAlign: 'left',
-  },
-  textInput: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.sm,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.base,
-    color: colors.ink,
-  },
-});
+function createStyles(colors: ColorPalette) {
+  return StyleSheet.create({
+    screen: {
+      flex: 1,
+      backgroundColor: colors.bg,
+    },
+    content: {
+      paddingHorizontal: spacing.xl,
+      paddingTop: spacing.xl,
+      paddingBottom: spacing.xl * 2,
+    },
+    pageTitle: {
+      color: colors.ink,
+      marginBottom: spacing.xl,
+      textAlign: 'left',
+    },
+    section: {
+      marginBottom: spacing.xl,
+    },
+    sectionTitle: {
+      color: colors.inkMuted,
+      marginBottom: spacing.base,
+      textAlign: 'left',
+    },
+    swatchRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: spacing.base,
+    },
+    swatchItem: {
+      width: 84,
+    },
+    swatch: {
+      width: 84,
+      height: 84,
+      borderRadius: radius.md,
+      borderWidth: 1,
+      borderColor: colors.border,
+      marginBottom: spacing.sm,
+    },
+    swatchLabel: {
+      color: colors.ink,
+      textAlign: 'left',
+    },
+    swatchHex: {
+      color: colors.inkMuted,
+      textAlign: 'left',
+    },
+    typeList: {
+      gap: spacing.base,
+    },
+    typeRow: {
+      gap: spacing.xs,
+    },
+    typeLabel: {
+      color: colors.inkMuted,
+      textAlign: 'left',
+    },
+    typeSample: {
+      color: colors.ink,
+      textAlign: 'left',
+    },
+    buttonGap: {
+      marginBottom: spacing.base,
+    },
+    card: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: radius.md,
+      padding: spacing.lg,
+    },
+    cardTitle: {
+      color: colors.ink,
+      marginBottom: spacing.xs,
+      textAlign: 'left',
+    },
+    cardBody: {
+      color: colors.inkMuted,
+      textAlign: 'left',
+    },
+    textInput: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: radius.sm,
+      paddingVertical: spacing.md,
+      paddingHorizontal: spacing.base,
+      color: colors.ink,
+    },
+  });
+}

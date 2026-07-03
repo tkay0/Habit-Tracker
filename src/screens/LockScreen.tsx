@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import PinDots from '../components/PinDots';
 import PinKeypad from '../components/PinKeypad';
 import { authenticateWithBiometrics, verifyPin } from '../lib/auth';
-import { colors, spacing, type } from '../theme';
+import { spacing, type ColorPalette, type, useTheme } from '../theme';
 
 interface LockScreenProps {
   biometricEnabled: boolean;
@@ -14,6 +14,8 @@ interface LockScreenProps {
 }
 
 export default function LockScreen({ biometricEnabled, biometricLabel, onUnlock }: LockScreenProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [pin, setPin] = useState('');
   const [error, setError] = useState(false);
   const triedBiometricOnMount = useRef(false);
@@ -74,27 +76,29 @@ export default function LockScreen({ biometricEnabled, biometricLabel, onUnlock 
   );
 }
 
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: colors.bg,
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: spacing.xl,
-  },
-  title: {
-    color: colors.ink,
-    textAlign: 'left',
-    marginBottom: spacing.sm,
-  },
-  subtitle: {
-    color: colors.inkMuted,
-    textAlign: 'left',
-    marginBottom: spacing.xl,
-  },
-  dotsWrap: {
-    marginBottom: spacing.xl,
-  },
-});
+function createStyles(colors: ColorPalette) {
+  return StyleSheet.create({
+    screen: {
+      flex: 1,
+      backgroundColor: colors.bg,
+    },
+    content: {
+      flex: 1,
+      justifyContent: 'center',
+      paddingHorizontal: spacing.xl,
+    },
+    title: {
+      color: colors.ink,
+      textAlign: 'left',
+      marginBottom: spacing.sm,
+    },
+    subtitle: {
+      color: colors.inkMuted,
+      textAlign: 'left',
+      marginBottom: spacing.xl,
+    },
+    dotsWrap: {
+      marginBottom: spacing.xl,
+    },
+  });
+}

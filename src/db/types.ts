@@ -1,4 +1,5 @@
 export type FrequencyType = 'daily' | 'custom';
+export type ThemeMode = 'light' | 'dark';
 
 export interface Habit {
   id: string;

@@ -1,6 +1,7 @@
+import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { colors, radius, spacing, type } from '../theme';
+import { radius, spacing, type ColorPalette, type, useTheme } from '../theme';
 
 interface PinKeypadProps {
   onDigitPress: (digit: string) => void;
@@ -21,6 +22,9 @@ export default function PinKeypad({
   biometricLabel,
   onBiometricPress,
 }: PinKeypadProps) {
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   return (
     <View style={styles.pad}>
       {ROWS.map((row) => (
@@ -51,31 +55,33 @@ export default function PinKeypad({
   );
 }
 
-const styles = StyleSheet.create({
-  pad: {
-    gap: spacing.base,
-  },
-  row: {
-    flexDirection: 'row',
-    gap: spacing.base,
-    justifyContent: 'center',
-  },
-  key: {
-    width: 72,
-    height: 72,
-    borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  keyText: {
-    color: colors.ink,
-  },
-  keySubText: {
-    color: colors.inkMuted,
-    textAlign: 'center',
-    paddingHorizontal: spacing.xs,
-  },
-});
+function createStyles(colors: ColorPalette) {
+  return StyleSheet.create({
+    pad: {
+      gap: spacing.base,
+    },
+    row: {
+      flexDirection: 'row',
+      gap: spacing.base,
+      justifyContent: 'center',
+    },
+    key: {
+      width: 72,
+      height: 72,
+      borderRadius: radius.md,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.surface,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    keyText: {
+      color: colors.ink,
+    },
+    keySubText: {
+      color: colors.inkMuted,
+      textAlign: 'center',
+      paddingHorizontal: spacing.xs,
+    },
+  });
+}
