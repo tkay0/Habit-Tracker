@@ -14,6 +14,7 @@ interface HabitRow {
   reminder_time: string | null;
   sort_order: number;
   archived: number;
+  notes: string | null;
   created_at: string;
 }
 
@@ -28,6 +29,7 @@ function mapHabitRow(row: HabitRow): Habit {
     reminderTime: row.reminder_time,
     sortOrder: row.sort_order,
     archived: row.archived === 1,
+    notes: row.notes,
     createdAt: row.created_at,
   };
 }
@@ -39,8 +41,8 @@ export async function createHabit(input: NewHabitInput): Promise<Habit> {
   const customDaysJson = input.customDays ? JSON.stringify(input.customDays) : null;
 
   await db.runAsync(
-    `INSERT INTO habits (id, name, icon, color, frequency_type, custom_days, reminder_time, sort_order, archived, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, ?)`,
+    `INSERT INTO habits (id, name, icon, color, frequency_type, custom_days, reminder_time, sort_order, archived, notes, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?)`,
     id,
     input.name,
     input.icon,
@@ -49,6 +51,7 @@ export async function createHabit(input: NewHabitInput): Promise<Habit> {
     customDaysJson,
     input.reminderTime ?? null,
     input.sortOrder ?? 0,
+    input.notes ?? null,
     createdAt
   );
 
@@ -109,6 +112,10 @@ export async function updateHabit(id: string, updates: HabitUpdateInput): Promis
   if (updates.archived !== undefined) {
     fields.push('archived = ?');
     values.push(updates.archived ? 1 : 0);
+  }
+  if (updates.notes !== undefined) {
+    fields.push('notes = ?');
+    values.push(updates.notes);
   }
 
   if (fields.length > 0) {

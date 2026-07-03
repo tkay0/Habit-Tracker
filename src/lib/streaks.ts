@@ -100,17 +100,20 @@ export function getCompletionRate(
   return scheduled === 0 ? 0 : completed / scheduled;
 }
 
-export function getBestWorstWeekday(
+// Shared by getBestWorstWeekday and getOverallBestWorstWeekday: walks one
+// habit's completion history and adds its scheduled/completed counts, per
+// ISO weekday, into the running totals (indices 1-7; 0 is unused).
+function accumulateWeekdayCounts(
   habit: StreakHabit,
   completions: CompletionRecord[],
-  today: string = todayDateString()
-): BestWorstWeekday {
-  if (completions.length === 0) return { best: null, worst: null };
+  today: string,
+  scheduledCount: number[],
+  completedCount: number[]
+): void {
+  if (completions.length === 0) return;
 
   const completedDates = new Set(completions.map((c) => c.date));
   const sortedDates = completions.map((c) => parseISO(c.date)).sort((a, b) => a.getTime() - b.getTime());
-  const scheduledCount = new Array(8).fill(0);
-  const completedCount = new Array(8).fill(0);
 
   let cursor = sortedDates[0];
   const end = parseISO(today);
@@ -124,7 +127,9 @@ export function getBestWorstWeekday(
     }
     cursor = addDays(cursor, 1);
   }
+}
 
+function pickBestWorstWeekday(scheduledCount: number[], completedCount: number[]): BestWorstWeekday {
   let best: WeekdayStat | null = null;
   let worst: WeekdayStat | null = null;
 
@@ -136,4 +141,41 @@ export function getBestWorstWeekday(
   }
 
   return { best, worst };
+}
+
+export function getBestWorstWeekday(
+  habit: StreakHabit,
+  completions: CompletionRecord[],
+  today: string = todayDateString()
+): BestWorstWeekday {
+  if (completions.length === 0) return { best: null, worst: null };
+
+  const scheduledCount = new Array(8).fill(0);
+  const completedCount = new Array(8).fill(0);
+  accumulateWeekdayCounts(habit, completions, today, scheduledCount, completedCount);
+
+  return pickBestWorstWeekday(scheduledCount, completedCount);
+}
+
+export interface HabitWithCompletions {
+  habit: StreakHabit;
+  completions: CompletionRecord[];
+}
+
+// Same as getBestWorstWeekday, but pooled across every habit's scheduled/
+// completed counts per weekday before picking the best/worst — i.e. the
+// weekday is judged by overall completion rate across all habits, not by
+// averaging each habit's individual rate.
+export function getOverallBestWorstWeekday(
+  entries: HabitWithCompletions[],
+  today: string = todayDateString()
+): BestWorstWeekday {
+  const scheduledCount = new Array(8).fill(0);
+  const completedCount = new Array(8).fill(0);
+
+  for (const entry of entries) {
+    accumulateWeekdayCounts(entry.habit, entry.completions, today, scheduledCount, completedCount);
+  }
+
+  return pickBestWorstWeekday(scheduledCount, completedCount);
 }

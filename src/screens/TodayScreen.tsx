@@ -1,8 +1,11 @@
+import { Feather } from '@expo/vector-icons';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import AddEditHabitScreen from './AddEditHabitScreen';
+import HabitDetailScreen from './HabitDetailScreen';
+import InsightsScreen from './InsightsScreen';
 import HabitRow from '../components/HabitRow';
 import { addCompletion, listCompletionsForHabit, listHabits, removeCompletion } from '../db';
 import type { Completion, Habit } from '../db/types';
@@ -16,6 +19,9 @@ export default function TodayScreen() {
   const [loading, setLoading] = useState(true);
   const [editorVisible, setEditorVisible] = useState(false);
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
+  const [detailVisible, setDetailVisible] = useState(false);
+  const [detailHabit, setDetailHabit] = useState<Habit | null>(null);
+  const [insightsVisible, setInsightsVisible] = useState(false);
 
   const today = useMemo(() => todayDateString(), []);
 
@@ -59,6 +65,16 @@ export default function TodayScreen() {
   function handleEditPress(habit: Habit) {
     setEditingHabit(habit);
     setEditorVisible(true);
+  }
+
+  function handleRowPress(habit: Habit) {
+    setDetailHabit(habit);
+    setDetailVisible(true);
+  }
+
+  function handleDetailClose() {
+    setDetailVisible(false);
+    void loadData();
   }
 
   function handleEditorClose() {
@@ -105,7 +121,14 @@ export default function TodayScreen() {
         keyExtractor={(item) => item.habit.id}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
-        ListHeaderComponent={<Text style={[type.display, styles.pageTitle]}>Today</Text>}
+        ListHeaderComponent={
+          <View style={styles.headerRow}>
+            <Text style={[type.display, styles.pageTitle]}>Today</Text>
+            <Pressable style={styles.insightsButton} onPress={() => setInsightsVisible(true)} hitSlop={8}>
+              <Feather name="bar-chart-2" size={22} color={colors.ink} />
+            </Pressable>
+          </View>
+        }
         renderItem={({ item }) => (
           <HabitRow
             name={item.habit.name}
@@ -115,6 +138,7 @@ export default function TodayScreen() {
             isCompleted={item.isCompleted}
             onToggle={() => handleToggle(item.habit)}
             onEdit={() => handleEditPress(item.habit)}
+            onPress={() => handleRowPress(item.habit)}
           />
         )}
         ListEmptyComponent={
@@ -142,6 +166,10 @@ export default function TodayScreen() {
         onSaved={handleEditorSaved}
         onDeleted={handleEditorDeleted}
       />
+
+      <HabitDetailScreen visible={detailVisible} habit={detailHabit} onClose={handleDetailClose} />
+
+      <InsightsScreen visible={insightsVisible} onClose={() => setInsightsVisible(false)} />
     </SafeAreaView>
   );
 }
@@ -157,10 +185,25 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xl * 3,
     flexGrow: 1,
   },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: spacing.xl,
+  },
   pageTitle: {
     color: colors.ink,
     textAlign: 'left',
-    marginBottom: spacing.xl,
+  },
+  insightsButton: {
+    width: 44,
+    height: 44,
+    borderRadius: radius.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   empty: {
     flex: 1,

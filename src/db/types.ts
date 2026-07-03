@@ -11,6 +11,7 @@ export interface Habit {
   reminderTime: string | null;
   sortOrder: number;
   archived: boolean;
+  notes: string | null;
   createdAt: string;
 }
 
@@ -22,6 +23,7 @@ export interface NewHabitInput {
   customDays?: number[] | null;
   reminderTime?: string | null;
   sortOrder?: number;
+  notes?: string | null;
 }
 
 export interface HabitUpdateInput {
@@ -33,6 +35,7 @@ export interface HabitUpdateInput {
   reminderTime?: string | null;
   sortOrder?: number;
   archived?: boolean;
+  notes?: string | null;
 }
 
 export interface Completion {

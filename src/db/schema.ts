@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS habits (
   reminder_time TEXT,
   sort_order INTEGER DEFAULT 0,
   archived INTEGER DEFAULT 0,
+  notes TEXT,
   created_at TEXT NOT NULL
 );
 

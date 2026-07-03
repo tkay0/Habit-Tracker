@@ -11,12 +11,13 @@ interface HabitRowProps {
   isCompleted: boolean;
   onToggle: () => void;
   onEdit: () => void;
+  onPress: () => void;
 }
 
-export default function HabitRow({ name, icon, color, streak, isCompleted, onToggle, onEdit }: HabitRowProps) {
+export default function HabitRow({ name, icon, color, streak, isCompleted, onToggle, onEdit, onPress }: HabitRowProps) {
   return (
     <View style={styles.row}>
-      <Pressable style={styles.tapArea} onPress={onToggle}>
+      <Pressable style={styles.tapArea} onPress={onPress}>
         <View style={[styles.iconWrap, { borderColor: color }]}>
           <Feather name={icon as React.ComponentProps<typeof Feather>['name']} size={22} color={color} />
         </View>
