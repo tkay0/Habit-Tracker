@@ -11,6 +11,7 @@
     },
     "android": {
       "package": "com.eastwood.hearth",
+      "permissions": ["android.permission.POST_NOTIFICATIONS"],
       "adaptiveIcon": {
         "backgroundColor": "#F5EFE4",
         "foregroundImage": "./assets/android-icon-foreground.png",
