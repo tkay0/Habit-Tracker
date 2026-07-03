@@ -1,6 +1,6 @@
 import { Feather } from '@expo/vector-icons';
-import { useMemo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useMemo, useRef } from 'react';
+import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { radius, spacing, type ColorPalette, type, useTheme } from '../theme';
 
@@ -18,6 +18,26 @@ interface HabitRowProps {
 export default function HabitRow({ name, icon, color, streak, isCompleted, onToggle, onEdit, onPress }: HabitRowProps) {
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
+
+  const scale = useRef(new Animated.Value(1)).current;
+  const checkOpacity = useRef(new Animated.Value(isCompleted ? 1 : 0)).current;
+  const wasCompleted = useRef(isCompleted);
+
+  useEffect(() => {
+    if (isCompleted && !wasCompleted.current) {
+      // Just checked in: a quick pop + fade, not a jarring snap.
+      scale.setValue(0.85);
+      checkOpacity.setValue(0);
+      Animated.parallel([
+        Animated.spring(scale, { toValue: 1, useNativeDriver: true, friction: 4, tension: 120 }),
+        Animated.timing(checkOpacity, { toValue: 1, duration: 150, useNativeDriver: true }),
+      ]).start();
+    } else if (!isCompleted && wasCompleted.current) {
+      scale.setValue(1);
+      checkOpacity.setValue(0);
+    }
+    wasCompleted.current = isCompleted;
+  }, [isCompleted, scale, checkOpacity]);
 
   return (
     <View style={styles.row}>
@@ -40,11 +60,18 @@ export default function HabitRow({ name, icon, color, streak, isCompleted, onTog
         <Feather name="edit-2" size={16} color={colors.inkMuted} />
       </Pressable>
 
-      <Pressable
-        style={[styles.check, isCompleted ? { backgroundColor: color, borderColor: color } : null]}
-        onPress={onToggle}
-      >
-        {isCompleted && <Feather name="check" size={24} color={colors.surface} />}
+      <Pressable onPress={onToggle}>
+        <Animated.View
+          style={[
+            styles.check,
+            isCompleted ? { backgroundColor: color, borderColor: color } : null,
+            { transform: [{ scale }] },
+          ]}
+        >
+          <Animated.View style={{ opacity: checkOpacity }}>
+            <Feather name="check" size={24} color={colors.surface} />
+          </Animated.View>
+        </Animated.View>
       </Pressable>
     </View>
   );
